@@ -20,17 +20,18 @@ function ContactPage() {
         </div>
         <div className="contact-details">
           <div className="contact-row">
+            <span className="contact-label">PHONE</span>
+            <a href="tel:+61401363375">0401 363 375</a>
+          </div>
+          <div className="contact-row">
             <span className="contact-label">EMAIL</span>
-            <a href="mailto:hello@example.com">hello@example.com</a>
+            <a href="mailto:playtozdogtraining@gmail.com">playtozdogtraining@gmail.com</a>
           </div>
           <div className="contact-row">
             <span className="contact-label">FOLLOW ALONG</span>
             <div className="social-links">
-              <a href="https://instagram.com/yourhandle" target="_blank" rel="noreferrer">
-                Instagram <span>@yourhandle</span> <span aria-hidden="true">↗</span>
-              </a>
-              <a href="https://facebook.com/yourhandle" target="_blank" rel="noreferrer">
-                Facebook <span>PlayToZ Dog Training</span> <span aria-hidden="true">↗</span>
+              <a href="https://www.instagram.com/play.to.z.dogtraining/" target="_blank" rel="noreferrer">
+                Instagram <span>@play.to.z.dogtraining</span> <span aria-hidden="true">↗</span>
               </a>
             </div>
           </div>
