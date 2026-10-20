@@ -4,6 +4,7 @@ import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
 import HomePage from './pages/HomePage'
 import NotFoundPage from './pages/NotFoundPage'
+import ServicesPage from './pages/ServicesPage'
 import bannerImage from '../reference-data/site-assets/Play to Z Dog Training banner v2(2).png'
 import pawFavicon from '../reference-data/site-assets/Play to Z Dog Training favicon.jpg'
 import './App.css'
@@ -11,6 +12,7 @@ import './App.css'
 const navigation = [
   { label: 'Home', to: '/' },
   { label: 'About', to: '/about' },
+  { label: 'Services', to: '/services' },
   ...(import.meta.env.DEV ? [{ label: 'Blog', to: '/blog' }] : []),
   { label: 'Contact', to: '/contact' },
 ]
@@ -102,6 +104,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/services" element={<ServicesPage />} />
           <Route path="/contact" element={<ContactPage />} />
           {import.meta.env.DEV && (
             <Route
