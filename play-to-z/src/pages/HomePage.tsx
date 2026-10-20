@@ -3,34 +3,9 @@ import { Link } from 'react-router-dom'
 function HomePage() {
   return (
     <>
-      <section className="hero content-width" aria-labelledby="home-title">
-        <div className="hero-copy">
-          <p className="eyebrow"><span className="eyebrow-dot" /> PLAYTOZ DOG TRAINING</p>
-          <h1 id="home-title">Dog training for <em>real life.</em></h1>
-          <p className="hero-intro">
-            Thoughtful, practical training for the everyday moments you share
-            with your dog. Start where you are and build from there, together.
-          </p>
-          <div className="hero-actions">
-            <Link className="button button-primary" to="/contact">
-              Start a conversation <span aria-hidden="true">↗</span>
-            </Link>
-            <Link className="text-link" to="/about">Meet PlayToZ</Link>
-          </div>
-          <p className="hero-footnote">Good progress is made one small win at a time.</p>
-        </div>
-        <div className="hero-visual">
-          <div
-            className="hero-photo"
-            role="img"
-            aria-label="Golden retriever enjoying time outdoors"
-          />
-          <div className="photo-caption">
-            <span>GOOD DOGS, GROWING TOGETHER</span>
-            <span aria-hidden="true">✳</span>
-          </div>
-          <div className="hero-stamp">Progress<br />over perfect</div>
-        </div>
+      <section className="banner-intro content-width" aria-label="Welcome">
+        <strong>Good days start together.</strong>
+        <p>Supportive training for the small moments that make up life with your dog.</p>
       </section>
 
       <section className="intro-section content-width" aria-labelledby="intro-title">
