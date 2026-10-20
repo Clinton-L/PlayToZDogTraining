@@ -31,7 +31,9 @@ function AboutPage() {
             practical steps you can carry into real life. No need to have it
             all figured out before you begin.
           </p>
-          <Link className="text-link" to="/contact">Come say hello <span aria-hidden="true">↗</span></Link>
+          <Link className="button button-primary" to="/contact">
+            Come say hello <span aria-hidden="true">↗</span>
+          </Link>
         </div>
       </div>
       <div className="about-values" aria-label="PlayToZ values">

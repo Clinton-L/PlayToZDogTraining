@@ -1,25 +1,31 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Nunito+Sans:wght@400;500;600;700;800;900&display=swap');
 
 :root {
-  --ink: #26372f;
-  --muted: #647269;
-  --paper: #f8faf5;
-  --line: #d8e0d7;
-  --green: #345846;
-  --coral: #e86f59;
-  --yellow: #f1c84c;
-  --sky: #d9edf0;
+  --ink: #111a33;
+  --muted: #42516a;
+  --paper: #f5f9fd;
+  --line: #d8e3ed;
+  --navy: #111a33;
+  --navy-hover: #091329;
+  --orange: #d18450;
+  --orange-ink: #934b24;
+  --pale-blue: #e3f0fa;
   --white: #fff;
-  --green-hover: #253f31;
-  --green-on-band: #d7e8d9;
+  --green: var(--navy);
+  --coral: var(--orange-ink);
+  --yellow: var(--orange);
+  --sky: var(--pale-blue);
+  --green-hover: var(--navy-hover);
+  --green-on-band: var(--pale-blue);
   --background-page: var(--paper);
-  --background-header: rgba(248, 250, 245, 0.96);
-  --background-primary: var(--green);
-  --background-highlight: var(--yellow);
+  --background-header: rgba(245, 249, 253, 0.96);
+  --background-primary: var(--navy);
+  --background-highlight: var(--orange);
   --image-home-hero: url('https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1500&q=85');
   --image-about-feature: url('https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=1200&q=85');
-  --font-body: 'DM Sans', sans-serif;
-  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Nunito Sans', sans-serif;
+  --font-display: 'Nunito Sans', sans-serif;
+  --font-handwritten: 'Caveat', cursive;
   --serif: var(--font-display);
   font-family: var(--font-body);
   color: var(--ink);
@@ -50,9 +56,11 @@
 }
 
 .brand-name {
+  font-family: var(--font-display);
   font-size: 25px;
-  font-weight: 700;
-  letter-spacing: 0;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .brand-caption {
@@ -124,10 +132,11 @@
   transform: translateY(-2px);
 }
 
-.header-cta:hover,
+.header-cta,
 .button-primary {
-  background: var(--green);
-  color: var(--white);
+  border-color: var(--orange);
+  background: var(--orange);
+  color: var(--ink);
 }
 
 .content-width {
@@ -191,7 +200,7 @@ h1,
   margin-bottom: 21px;
   font-family: var(--serif);
   font-size: 62px;
-  font-weight: 400;
+  font-weight: 800;
   letter-spacing: 0;
   line-height: 0.99;
 }
@@ -199,7 +208,7 @@ h1,
 h1 em,
 h2 em {
   color: var(--coral);
-  font-weight: 400;
+  font-weight: 900;
 }
 
 .hero-intro,
@@ -217,12 +226,11 @@ h2 em {
   gap: 25px;
 }
 
-.button-primary {
-  border-color: var(--green);
-}
-
+.header-cta:hover,
 .button-primary:hover {
-  background: var(--green-hover);
+  border-color: var(--orange-ink);
+  background: var(--orange-ink);
+  color: var(--white);
 }
 
 .text-link {
@@ -290,8 +298,9 @@ h2 em {
   border-radius: 50%;
   background: var(--background-highlight);
   color: var(--ink);
-  font-family: var(--serif);
-  font-size: 17px;
+  font-family: var(--font-handwritten);
+  font-size: 23px;
+  font-weight: 700;
   line-height: 1.08;
   text-align: center;
   transform: rotate(8deg);
@@ -439,6 +448,7 @@ h2 em {
 .story-copy h2 {
   margin-bottom: 20px;
   font-size: 42px;
+  font-weight: 800;
   line-height: 1.05;
 }
 
@@ -496,7 +506,7 @@ h2 em {
   margin-bottom: 12px;
   font-family: var(--serif);
   font-size: 30px;
-  font-weight: 400;
+  font-weight: 800;
   line-height: 1.1;
 }
 
@@ -609,7 +619,7 @@ h2 em {
   margin-bottom: 10px;
   font-family: var(--serif);
   font-size: 32px;
-  font-weight: 400;
+  font-weight: 800;
   line-height: 1.1;
 }
 
@@ -667,7 +677,7 @@ h2 em {
   margin: 0;
   font-family: var(--serif);
   font-size: 30px;
-  font-weight: 400;
+  font-weight: 800;
 }
 
 .archive-list {
@@ -763,8 +773,8 @@ h2 em {
 .site-footer > p {
   margin: 0;
   color: var(--muted);
-  font-family: var(--serif);
-  font-size: 16px;
+  font-family: var(--font-handwritten);
+  font-size: 22px;
 }
 
 .site-footer nav {
