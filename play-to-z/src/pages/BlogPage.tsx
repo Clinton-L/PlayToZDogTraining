@@ -23,9 +23,9 @@ function BlogPage() {
         </p>
       </div>
       <div className="post-list">
-        {latestBlogPosts.map((post, index) => (
+        {latestBlogPosts.map((post) => (
           <article className="post-card" key={post.title}>
-            <span className="post-index">0{index + 1}</span>
+            <img className="post-image" src={post.imageUrl} alt={post.imageAlt} loading="lazy" />
             <div className="post-content">
               <div className="post-meta">
                 <span>{post.category}</span>
@@ -54,6 +54,7 @@ function BlogPage() {
             {archivedBlogPosts.map((post) => (
               <details className="archive-post" key={post.title}>
                 <summary>
+                  <img className="archive-post-image" src={post.imageUrl} alt="" loading="lazy" />
                   <span className="archive-post-meta">
                     <span>{formatPublishedDate(post.publishedAt)}</span>
                     <span>{post.category}</span>

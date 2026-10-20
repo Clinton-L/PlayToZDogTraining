@@ -1,42 +1,83 @@
-import { BrowserRouter, Link, NavLink, Route, Routes } from 'react-router-dom'
+import { lazy, Suspense, useState } from 'react'
+import { BrowserRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import AboutPage from './pages/AboutPage'
-import BlogPage from './pages/BlogPage'
 import ContactPage from './pages/ContactPage'
 import HomePage from './pages/HomePage'
 import NotFoundPage from './pages/NotFoundPage'
+import bannerImage from '../reference-data/site-assets/Play to Z Dog Training banner v2(2).png'
+import pawFavicon from '../reference-data/site-assets/Play to Z Dog Training favicon.jpg'
 import './App.css'
 
 const navigation = [
   { label: 'Home', to: '/' },
-  { label: 'About me', to: '/about' },
-  { label: 'Blog', to: '/blog' },
+  { label: 'About', to: '/about' },
+  ...(import.meta.env.DEV ? [{ label: 'Blog', to: '/blog' }] : []),
   { label: 'Contact', to: '/contact' },
 ]
 
-function SiteHeader() {
+const DevelopmentBlogPage = import.meta.env.DEV
+  ? lazy(() => import('./pages/BlogPage'))
+  : null
+
+function DevelopmentBlogRoute() {
+  if (!DevelopmentBlogPage) return null
+
   return (
-    <header className="site-header">
-      <Link className="brand" to="/" aria-label="PlayToZ Dog Training home">
-        <span className="brand-name">PlayToZ</span>
-        <span className="brand-caption">DOG TRAINING</span>
-      </Link>
-      <nav className="main-nav" aria-label="Main navigation">
-        {navigation.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.to === '/'}
-            className={({ isActive }) =>
-              isActive ? 'nav-link is-active' : 'nav-link'
-            }
-          >
-            {item.label}
-          </NavLink>
-        ))}
-      </nav>
-      <Link className="header-cta" to="/contact">
-        Let’s talk <span aria-hidden="true">↗</span>
-      </Link>
+    <Suspense fallback={null}>
+      <DevelopmentBlogPage />
+    </Suspense>
+  )
+}
+
+function SiteHeader() {
+  const { pathname } = useLocation()
+  const isHome = pathname === '/'
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  return (
+    <header className={`site-header${isHome ? ' site-header-home' : ''}`}>
+      {isHome && (
+        <Link className="home-banner" to="/" aria-label="Play To Z Dog Training home">
+          <img src={bannerImage} alt="Play To Z Dog Training. Helping dogs and their people learn through play." />
+        </Link>
+      )}
+      <div className="site-header-row">
+        {!isHome && (
+          <Link className="brand" to="/" aria-label="PlayToZ Dog Training home">
+            <span className="brand-name">PlayToZ</span>
+            <span className="brand-caption">DOG TRAINING</span>
+          </Link>
+        )}
+        <nav id="main-navigation" className={`main-nav${menuOpen ? ' is-open' : ''}`} aria-label="Main navigation">
+          {navigation.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === '/'}
+              onClick={() => setMenuOpen(false)}
+              className={({ isActive }) =>
+                isActive ? 'nav-link is-active' : 'nav-link'
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+        <Link className="header-cta" to="/contact">
+          Get in touch <img src={pawFavicon} alt="" />
+        </Link>
+        <button
+          className="menu-toggle"
+          type="button"
+          aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
+          aria-expanded={menuOpen}
+          aria-controls="main-navigation"
+          title={menuOpen ? 'Close navigation' : 'Open navigation'}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <img src={pawFavicon} alt="" />
+        </button>
+      </div>
     </header>
   )
 }
@@ -62,7 +103,12 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/blog" element={<BlogPage />} />
+          {import.meta.env.DEV && (
+            <Route
+              path="/blog"
+              element={<DevelopmentBlogRoute />}
+            />
+          )}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
