@@ -31,14 +31,20 @@ jobs:
             cache-dependency-path: './play-to-z/yarn.lock'
         - name: Install dependencies
           run: yarn install --frozen-lockfile
+          working-directory: ./play-to-z
 
         - name: Build project
           run: yarn build
+          working-directory: ./play-to-z
+
+        - name: Create 404 Fallback
+          run: cp dist/index.html dist/404.html
+          working-directory: ./play-to-z
         
         - name: Upload artifact
           uses: actions/upload-pages-artifact@v3
           with:
-            path: './dist'
+            path: './play-to-z/dist'
         
         - name: Deploy to GitHub Pages
           id: deployment
