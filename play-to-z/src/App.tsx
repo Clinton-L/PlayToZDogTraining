@@ -5,8 +5,8 @@ import ContactPage from './pages/ContactPage'
 import HomePage from './pages/HomePage'
 import NotFoundPage from './pages/NotFoundPage'
 import ServicesPage from './pages/ServicesPage'
-import bannerImage from '../reference-data/site-assets/Play to Z Dog Training banner v2(2).png'
-import pawFavicon from '../reference-data/site-assets/Play to Z Dog Training favicon.jpg'
+import bannerImage from './assets/Play to Z Dog Training banner v2(2).png'
+import pawFavicon from './assets/Play to Z Dog Training favicon.jpg'
 import './App.css'
 
 const navigation = [
