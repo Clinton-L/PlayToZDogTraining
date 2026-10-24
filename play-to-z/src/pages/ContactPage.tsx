@@ -31,11 +31,9 @@ function ContactPage() {
             <span className="contact-label">FOLLOW ALONG</span>
             <div className="social-links">
               <a href="https://www.instagram.com/play.to.z.dogtraining/" target="_blank" rel="noreferrer">
-                <i class="fab fa-instagram"/>
                 Instagram <span>@play.to.z.dogtraining</span> <span aria-hidden="true">↗</span>
               </a>
               <a href="https://www.facebook.com/profile.php?id=61594495531864" target="_blank" rel="noreferrer">
-                <i class="fab fa-facebook" />
                 Facebook <span>@playtozdogtraining</span> <span aria-hidden="true">↗</span>
               </a>
             </div>
