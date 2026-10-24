@@ -14,8 +14,8 @@ function ContactPage() {
           <span className="contact-symbol" aria-hidden="true">✳</span>
           <h2>Tell me a little about your dog.</h2>
           <p>
-            What is going well? What would you like to feel easier? A few
-            details are plenty to get the conversation started.
+            Thinking about training?
+            Tell me a little about you and your dog and I'll get back to you soon.
           </p>
         </div>
         <div className="contact-details">
@@ -25,13 +25,18 @@ function ContactPage() {
           </div>
           <div className="contact-row">
             <span className="contact-label">EMAIL</span>
-            <a href="mailto:playtozdogtraining@gmail.com">playtozdogtraining@gmail.com</a>
+            <a href="mailto:kelsey@playtozdogtraining.com.au">kelsey@playtozdogtraining.com.au</a>
           </div>
           <div className="contact-row">
             <span className="contact-label">FOLLOW ALONG</span>
             <div className="social-links">
               <a href="https://www.instagram.com/play.to.z.dogtraining/" target="_blank" rel="noreferrer">
+                <i class="fab fa-instagram"/>
                 Instagram <span>@play.to.z.dogtraining</span> <span aria-hidden="true">↗</span>
+              </a>
+              <a href="https://www.facebook.com/profile.php?id=61594495531864" target="_blank" rel="noreferrer">
+                <i class="fab fa-facebook" />
+                Facebook <span>@playtozdogtraining</span> <span aria-hidden="true">↗</span>
               </a>
             </div>
           </div>

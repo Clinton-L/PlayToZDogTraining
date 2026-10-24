@@ -2,11 +2,14 @@ import { lazy, Suspense, useState } from 'react'
 import { BrowserRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
+import FAQPage from './pages/FAQPage'
 import HomePage from './pages/HomePage'
 import NotFoundPage from './pages/NotFoundPage'
 import ServicesPage from './pages/ServicesPage'
+import CancellationPolicyPage from './pages/CancellationPolicyPage'
 import bannerImage from './assets/Play to Z Dog Training banner v2(2).png'
 import pawFavicon from './assets/Play to Z Dog Training favicon.jpg'
+import fullLogo from './assets/Play to Z Dog Training logo_full colour_RGB.png'
 import './App.css'
 
 const navigation = [
@@ -14,6 +17,7 @@ const navigation = [
   { label: 'About', to: '/about' },
   { label: 'Services', to: '/services' },
   ...(import.meta.env.DEV ? [{ label: 'Blog', to: '/blog' }] : []),
+  { label: 'FAQ', to: '/faq' },
   { label: 'Contact', to: '/contact' },
 ]
 
@@ -46,8 +50,7 @@ function SiteHeader() {
       <div className="site-header-row">
         {!isHome && (
           <Link className="brand" to="/" aria-label="PlayToZ Dog Training home">
-            <span className="brand-name">PlayToZ</span>
-            <span className="brand-caption">DOG TRAINING</span>
+            <img src={fullLogo} alt="" />
           </Link>
         )}
         <nav id="main-navigation" className={`main-nav${menuOpen ? ' is-open' : ''}`} aria-label="Main navigation">
@@ -87,11 +90,18 @@ function SiteHeader() {
 function SiteFooter() {
   return (
     <footer className="site-footer">
-      <Link className="footer-brand" to="/">PlayToZ <span>Dog Training</span></Link>
+      <Link className="footer-brand" to="/" aria-label="PlayToZ Dog Training home">
+        <img src={fullLogo} alt="" />
+      </Link>
       <p>Good days are built together.</p>
       <nav aria-label="Footer navigation">
-        {navigation.map((item) => <Link key={item.to} to={item.to}>{item.label}</Link>)}
+        {navigation
+          .filter((item) => item.to !== '/faq')
+          .map((item) => <Link key={item.to} to={item.to}>{item.label}</Link>)}
       </nav>
+      <p className="footer-legal">
+        <Link to="/cancellation-policy">Cancellation &amp; Rescheduling Policy</Link>
+      </p>
     </footer>
   )
 }
@@ -106,6 +116,8 @@ function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/faq" element={<FAQPage />} />
+          <Route path="/cancellation-policy" element={<CancellationPolicyPage />} />
           {import.meta.env.DEV && (
             <Route
               path="/blog"

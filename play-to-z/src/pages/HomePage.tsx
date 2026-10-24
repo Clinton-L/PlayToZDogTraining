@@ -14,9 +14,7 @@ function HomePage() {
           <h2 id="intro-title">More connection.<br /><em>Less guesswork.</em></h2>
         </div>
         <p className="intro-copy">
-          Training can fit the life you already have. We focus on clear
-          communication, useful skills, and steady progress that feels good
-          for both ends of the leash.
+          Training can fit the life you already have. We don't chase perfection. We focus on...
         </p>
         <div className="principles">
           <article className="principle">

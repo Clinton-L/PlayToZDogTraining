@@ -1,79 +1,172 @@
 import { Link } from 'react-router-dom'
+import { services, type Service } from './services'
 
-const services = [
-  {
-    title: 'Puppy basics',
-    imageUrl:
-      'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=720&q=80',
-    imageAlt: 'Golden retriever outdoors',
-    description:
-      'Build a kind, confident foundation with early learning, everyday routines, and the skills that help a puppy settle into family life.',
-  },
-  {
-    title: 'Basic obedience',
-    imageUrl:
-      'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=720&q=80',
-    imageAlt: 'Dog looking attentively toward the camera',
-    description:
-      'Practice useful cues and everyday manners, with training shaped around the situations you and your dog encounter most.',
-  },
-  {
-    title: 'Settling at home or somewhere new',
-    imageUrl:
-      'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=720&q=80',
-    imageAlt: 'Relaxed dog resting at home',
-    description:
-      'Help your dog feel more comfortable in a new home or environment through supportive routines and gradual, practical steps.',
-  },
-  {
-    title: 'Skills training',
-    imageUrl:
-      'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?auto=format&fit=crop&w=720&q=80',
-    imageAlt: 'Dog running through a grassy field',
-    description:
-      'Work on specific skills that matter to your life together, with practice tailored to your dog and your goals.',
-  },
-  {
-    title: 'Event assistance',
-    imageUrl:
-      'https://images.unsplash.com/photo-1551717743-49959800b1f6?auto=format&fit=crop&w=720&q=80',
-    imageAlt: 'Dogs spending time together outdoors',
-    description:
-      'Get support travelling to and from a special event, with practice for the specific actions you need included in skills training.',
-  },
-]
+function RichText({ content }: { content: string }) {
+  return <span dangerouslySetInnerHTML={{ __html: content }} />
+}
+
+function ServiceDetails({ service }: { service: Service }) {
+  const { what, how } = service.details
+  const closingNote = service.closingNote
+  const structuredHowItems = how?.list?.filter((item) => typeof item !== 'string') ?? []
+  const textHowItems = how?.list?.filter((item): item is string => typeof item === 'string') ?? []
+
+  return (
+    <>
+      {what && (what.title || what.subtitle || what.content || what.list?.length) && (
+        <section className="service-detail-section">
+          {what.title && <h4>{what.title}</h4>}
+          {what.subtitle && <p><RichText content={what.subtitle} /></p>}
+          {what.content && <p><RichText content={what.content} /></p>}
+          {what.list && (
+            <ul>
+              {what.list.map((item) => <li key={item}><RichText content={item} /></li>)}
+            </ul>
+          )}
+        </section>
+      )}
+
+      {how && (how.title || how.list?.length) && (
+        <section className="service-detail-section">
+          {how.title && <h4>{how.title}</h4>}
+          {structuredHowItems.length > 0 && (
+            <dl className="service-fee-list">
+              {structuredHowItems.map((item) => (
+                <div key={item.item}>
+                  <dt>{item.item}</dt>
+                  <dd><RichText content={item.description} /></dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {textHowItems.length > 0 && (
+            <ul>
+              {textHowItems.map((item) => <li key={item}><RichText content={item} /></li>)}
+            </ul>
+          )}
+        </section>
+      )}
+
+      {closingNote && (closingNote.title || closingNote.description || closingNote.content) && (
+        <section className="service-closing-note">
+          {closingNote.title && <h4>{closingNote.title}</h4>}
+          {(closingNote.description || closingNote.content) && (
+            <p><RichText content={closingNote.description || closingNote.content || ''} /></p>
+          )}
+        </section>
+      )}
+    </>
+  )
+}
+
+function ServiceCard({ service, logistics = false }: { service: Service; logistics?: boolean }) {
+  const { description = [] } = service.details
+  const hasMoreDetails = Boolean(
+    service.details.what?.title ||
+    service.details.what?.subtitle ||
+    service.details.what?.content ||
+    service.details.what?.list?.length ||
+    service.details.how?.title ||
+    service.details.how?.list?.length ||
+    service.closingNote?.title ||
+    service.closingNote?.description ||
+    service.closingNote?.content,
+  )
+
+  return (
+    <article className={`service-card${logistics ? ' service-card-logistics' : ''}`}>
+      <div className="service-card-heading">
+        <img
+          className="service-image"
+          src={service.imageUrl}
+          alt={service.imageAlt}
+          loading="lazy"
+          style={{ objectPosition: service.imagePosition ?? 'center' }}
+        />
+        <div>
+          <h3>
+            <span className="service-keyword">{service.title.split(' ')[0]}</span>
+            {service.title.slice(service.title.indexOf(' '))}
+          </h3>
+          <p className="service-subtitle">{service.subtitle}</p>
+          <p className="service-price"><RichText content={logistics ? 'Travel fees vary by distance' : service.cost} /></p>
+        </div>
+      </div>
+
+      <div className="service-copy">
+        {description.map((paragraph, index) => (
+          <p key={`${service.title}-description-${index}`}><RichText content={paragraph} /></p>
+        ))}
+
+        {logistics ? (
+          <div className="service-expanded-content">
+            <ServiceDetails service={service} />
+          </div>
+        ) : hasMoreDetails && (
+          <details className="service-details">
+            <summary>Explore what's included</summary>
+            <div className="service-expanded-content">
+              <ServiceDetails service={service} />
+            </div>
+          </details>
+        )}
+
+        <Link className="text-link" to="/contact" aria-label={`Ask about ${service.title}`}>
+          Ask about this service <span aria-hidden="true">↗</span>
+        </Link>
+      </div>
+    </article>
+  )
+}
 
 function ServicesPage() {
+  const visibleServices = services.filter((service) => service.display)
+  const programServices = visibleServices.filter((service) => service.category !== 'logistics')
+  const logisticsService = visibleServices.find((service) => service.category === 'logistics')
+
   return (
     <section className="inner-page content-width services-page" aria-labelledby="services-title">
       <div className="page-heading">
-        <p className="eyebrow"><span className="eyebrow-dot" /> TRAINING FOR REAL LIFE</p>
-        <h1 id="services-title">Practical support for <em>everyday life.</em></h1>
+        <p className="eyebrow"><span className="eyebrow-dot" /> WE'RE NOT CHASING PERFECT DOGS</p>
+        <h1 id="services-title">We're helping you raise a dog <em>you love living with.</em></h1>
         <p className="page-lede">
-          Start with what matters to you and your dog. We can build useful skills
-          at a pace that feels manageable for both of you.
+          We’ll work at your pace, build skills that fit your everyday life and celebrate the little wins along the way.
+          I’ll help you understand what makes your dog tick and give you the tools to keep building on what we learn together.
+          Because training doesn’t stop when our session ends — it’s about the relationship you build, the things you practise together and finding more joy in everyday life.
+          <br />
+          All training is private, in-home and tailored to you, your dog and your family. 🐾
+        </p>
+        <br />
+        <p>
+          <small>
+            A little note on pricing
+
+            Play to Z is just getting started, so all services are currently offered at introductory rates.
+            These rates are available for a limited time while I grow the business and continue building my experience working with local families and their dogs.
+          </small>
         </p>
       </div>
 
-      <div className="services-list">
-        {services.map((service) => (
-          <article className="service-item" key={service.title}>
-            <img className="service-image" src={service.imageUrl} alt={service.imageAlt} loading="lazy" />
-            <div className="service-copy">
-              <h2>{service.title}</h2>
-              <p>{service.description}</p>
-            </div>
-          </article>
-        ))}
-      </div>
+      <section className="service-section" aria-labelledby="programs-title">
+        <h2 id="programs-title">Find the right support</h2>
+        <div className="services-list">
+          {programServices.map((service) => <ServiceCard key={service.title} service={service} />)}
+        </div>
+      </section>
+
+      {logisticsService && (
+        <section className="service-section logistics-section" aria-labelledby="travel-title">
+          <h2 id="travel-title">In-home sessions &amp; travel</h2>
+          <div className="services-list">
+            <ServiceCard service={logisticsService} logistics />
+          </div>
+        </section>
+      )}
 
       <div className="services-bottom">
         <Link className="button button-primary" to="/contact">
           Talk about your goals <span aria-hidden="true">↗</span>
         </Link>
-        <p className="service-travel-note">
-          Please note: a travel fee applies for travel beyond 15 km.
-        </p>
       </div>
     </section>
   )
