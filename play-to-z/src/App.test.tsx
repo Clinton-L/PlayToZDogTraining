@@ -18,6 +18,19 @@ afterEach(() => {
   window.history.replaceState(null, '', '/')
 })
 
+it('loads and configures Google Analytics', () => {
+  render(<App />)
+
+  const script = document.head.querySelector('#google-analytics-tag')
+  expect(script?.getAttribute('src')).toBe(
+    'https://www.googletagmanager.com/gtag/js?id=G-BGL5BKJ789',
+  )
+  expect((script as HTMLScriptElement | null)?.async).toBe(true)
+  expect(window.dataLayer.some((command) =>
+    command[0] === 'config' && command[1] === 'G-BGL5BKJ789',
+  )).toBe(true)
+})
+
 describe.each(routes)('$path route', ({ path, heading }) => {
   it('loads its page content', async () => {
     window.history.pushState(null, '', path)

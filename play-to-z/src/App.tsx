@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { BrowserRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
@@ -11,6 +11,12 @@ import bannerImage from './assets/Play to Z Dog Training banner v2(2).png'
 import pawFavicon from './assets/Play to Z Dog Training favicon.jpg'
 import fullLogo from './assets/Play to Z Dog Training logo_full colour_RGB.png'
 import './App.css'
+
+declare global {
+  interface Window {
+    dataLayer: IArguments[]
+  }
+}
 
 const navigation = [
   { label: 'Home', to: '/' },
@@ -87,6 +93,29 @@ function SiteHeader() {
   )
 }
 
+function SiteAnalytics() {
+  useEffect(() => {
+    if (document.getElementById('google-analytics-tag')) return
+
+    window.dataLayer = window.dataLayer || []
+
+    function gtag(..._args: unknown[]) {
+      window.dataLayer.push(arguments)
+    }
+
+    gtag('js', new Date())
+    gtag('config', 'G-BGL5BKJ789')
+
+    const script = document.createElement('script')
+    script.id = 'google-analytics-tag'
+    script.async = true
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=G-BGL5BKJ789'
+    document.head.appendChild(script)
+  }, [])
+
+  return null
+}
+
 function SiteFooter() {
   return (
     <footer className="site-footer">
@@ -110,6 +139,7 @@ function App() {
   return (
     <BrowserRouter>
       <SiteHeader />
+      <SiteAnalytics />
       <main id="main-content">
         <Routes>
           <Route path="/" element={<HomePage />} />
