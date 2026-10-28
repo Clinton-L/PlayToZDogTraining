@@ -150,6 +150,12 @@ it('uses the on-duty photo in the first About story and preserves the other stor
     Array.from(story.querySelector('.about-photo')?.classList ?? [])
       .find((imageClass) => ['about-photo-banjo', 'about-photo-graduation', 'about-photo-koala'].includes(imageClass)) ?? null,
   )).toEqual(['about-photo-banjo', 'about-photo-graduation', 'about-photo-koala'])
+  expect(stories.map((story) => story.querySelector('.about-photo')?.getAttribute('src'))).toEqual([
+    expect.stringContaining('KelsHawkOnDuty-about'),
+    expect.stringContaining('KelsBanjoField'),
+    expect.stringContaining('KelsGrad'),
+    expect.stringContaining('KelsKoala'),
+  ])
   const firstImage = stories[0].querySelector('img.about-photo')
   expect(firstImage?.getAttribute('src')).toContain('KelsHawkOnDuty-about')
   expect(firstImage?.getAttribute('alt')).toBe('Kelsey with Hawk, a scent-detection dog in training')
