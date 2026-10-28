@@ -2,6 +2,7 @@ import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import App from './App'
 import { services } from './pages/services'
+import indexHtml from '../index.html?raw'
 
 const routes = [
   { path: '/', heading: /More connection.*Less guesswork/ },
@@ -18,17 +19,18 @@ afterEach(() => {
   window.history.replaceState(null, '', '/')
 })
 
-it('loads and configures Google Analytics', () => {
-  render(<App />)
+it('embeds the Google tag in the document head after the meta tags', () => {
+  const head = indexHtml.match(/<head>([\s\S]*?)<\/head>/)?.[1] ?? ''
+  const tagLoader = head.indexOf('https://www.googletagmanager.com/gtm.js?id=G-BGL5BKJ789')
+  const charsetMeta = head.indexOf('<meta charset=')
+  const viewportMeta = head.indexOf('<meta name="viewport"')
+  const inlineTag = head.indexOf('function gtag(){dataLayer.push(arguments);}')
 
-  const script = document.head.querySelector('#google-analytics-tag')
-  expect(script?.getAttribute('src')).toBe(
-    'https://www.googletagmanager.com/gtag/js?id=G-BGL5BKJ789',
-  )
-  expect((script as HTMLScriptElement | null)?.async).toBe(true)
-  expect(window.dataLayer.some((command) =>
-    command[0] === 'config' && command[1] === 'G-BGL5BKJ789',
-  )).toBe(true)
+  expect(charsetMeta).toBeGreaterThanOrEqual(0)
+  expect(viewportMeta).toBeGreaterThan(charsetMeta)
+  expect(tagLoader).toBeGreaterThan(viewportMeta)
+  expect(inlineTag).toBeGreaterThan(tagLoader)
+  expect(head).toContain("gtag('js', new Date());")
 })
 
 describe.each(routes)('$path route', ({ path, heading }) => {
