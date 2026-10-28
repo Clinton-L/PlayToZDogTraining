@@ -22,7 +22,6 @@
   --background-primary: var(--navy);
   --background-highlight: var(--orange);
   --image-home-hero: url('https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1500&q=85');
-  --image-about-feature: url('https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=1200&q=85');
   --font-body: 'Nunito Sans', sans-serif;
   --font-display: 'Nunito Sans', sans-serif;
   --font-handwritten: 'Caveat', cursive;
@@ -522,7 +521,6 @@ h2 em {
   height: 470px;
   border-radius: 3px 68px 3px 3px;
   background: var(--sky);
-  background-image: var(--image-about-feature);
   background-position: center;
   background-size: cover;
 }
