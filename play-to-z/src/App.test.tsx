@@ -21,7 +21,7 @@ afterEach(() => {
 
 it('embeds the Google tag in the document head after the meta tags', () => {
   const head = indexHtml.match(/<head>([\s\S]*?)<\/head>/)?.[1] ?? ''
-  const tagLoader = head.indexOf('https://www.googletagmanager.com/gtm.js?id=G-BGL5BKJ789')
+  const tagLoader = head.indexOf('https://www.googletagmanager.com/gtag/js?id=G-BGL5BKJ789')
   const charsetMeta = head.indexOf('<meta charset=')
   const viewportMeta = head.indexOf('<meta name="viewport"')
   const inlineTag = head.indexOf('function gtag(){dataLayer.push(arguments);}')
@@ -31,6 +31,8 @@ it('embeds the Google tag in the document head after the meta tags', () => {
   expect(tagLoader).toBeGreaterThan(viewportMeta)
   expect(inlineTag).toBeGreaterThan(tagLoader)
   expect(head).toContain("gtag('js', new Date());")
+  expect(head).toContain("gtag('config', 'G-BGL5BKJ789', { send_page_view: false });")
+  expect(head).not.toContain('gtm.js')
 })
 
 describe.each(routes)('$path route', ({ path, heading }) => {
@@ -40,6 +42,28 @@ describe.each(routes)('$path route', ({ path, heading }) => {
 
     expect(await screen.findByRole('heading', { name: heading })).toBeTruthy()
   })
+})
+
+it('updates the page title, description, canonical URL, and robots directive for a route', async () => {
+  window.history.pushState(null, '', '/services')
+  render(<App />)
+
+  expect(await screen.findByRole('heading', { name: /We're helping you raise a/ })).toBeTruthy()
+  expect(document.title).toBe('Dog Training Services | Play to Z Dog Training')
+  expect(document.querySelector<HTMLMetaElement>('meta[name="description"]')?.content).toContain('private, in-home')
+  expect(document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href).toBe(
+    'https://playtozdogtraining.com.au/services',
+  )
+  expect(document.querySelector<HTMLMetaElement>('meta[name="robots"]')?.content).toBe('index,follow')
+})
+
+it('marks unknown routes as not indexable', async () => {
+  window.history.pushState(null, '', '/not-a-page')
+  render(<App />)
+
+  expect(await screen.findByRole('heading', { name: /That page wandered/ })).toBeTruthy()
+  expect(document.querySelector<HTMLMetaElement>('meta[name="robots"]')?.content).toBe('noindex,follow')
+  expect(document.querySelector('link[rel="canonical"]')).toBeNull()
 })
 
 it('shows service pricing and the in-home travel fees', () => {
