@@ -1,0 +1,26 @@
+{
+  "/": {
+    "title": "Play to Z Dog Training | Supportive Training for Dogs and Their People",
+    "description": "Supportive, practical dog training for puppies and their people. Build everyday skills and a stronger connection with Play to Z Dog Training."
+  },
+  "/about": {
+    "title": "About | Play to Z Dog Training",
+    "description": "Meet Kelsey and learn about Play to Z's practical, kind approach to understanding dogs and building skills for everyday life."
+  },
+  "/services": {
+    "title": "Dog Training Services | Play to Z Dog Training",
+    "description": "Explore private, in-home puppy and dog training services tailored to your family, your dog, and everyday life."
+  },
+  "/faq": {
+    "title": "Frequently Asked Questions | Play to Z Dog Training",
+    "description": "Find answers about dog training sessions, methods, service areas, travel fees, and what to expect when working with Play to Z."
+  },
+  "/contact": {
+    "title": "Contact | Play to Z Dog Training",
+    "description": "Contact Play to Z Dog Training to ask a question or talk about practical, supportive training for you and your dog."
+  },
+  "/cancellation-policy": {
+    "title": "Cancellation and Rescheduling Policy | Play to Z Dog Training",
+    "description": "Read the Play to Z Dog Training cancellation and rescheduling policy, including notice periods, fees, and unexpected circumstances."
+  }
+}

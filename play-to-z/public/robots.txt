@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://playtozdogtraining.com.au/sitemap.xml

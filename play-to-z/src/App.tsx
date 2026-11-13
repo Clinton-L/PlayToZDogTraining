@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { BrowserRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
@@ -10,7 +10,14 @@ import CancellationPolicyPage from './pages/CancellationPolicyPage'
 import bannerImage from './assets/Play to Z Dog Training banner v2(2).png'
 import pawFavicon from './assets/Play to Z Dog Training favicon.jpg'
 import fullLogo from './assets/Play to Z Dog Training logo_full colour_RGB.png'
+import pageMetadata from './seo-pages.json'
 import './App.css'
+
+declare global {
+  interface Window {
+    gtag: (...args: unknown[]) => void
+  }
+}
 
 const navigation = [
   { label: 'Home', to: '/' },
@@ -106,9 +113,58 @@ function SiteFooter() {
   )
 }
 
+function PageMetadata() {
+  const { pathname, search, hash } = useLocation()
+  const route = pathname.replace(/\/+$/, '') || '/'
+  const metadata = pageMetadata[route as keyof typeof pageMetadata]
+
+  useEffect(() => {
+    document.title = metadata?.title ?? 'Page not found | Play to Z Dog Training'
+
+    let description = document.querySelector<HTMLMetaElement>('meta[name="description"]')
+    if (!description) {
+      description = document.createElement('meta')
+      description.name = 'description'
+      document.head.append(description)
+    }
+    description.content = metadata?.description ?? 'The page you requested could not be found.'
+
+    let robots = document.querySelector<HTMLMetaElement>('meta[name="robots"]')
+    if (!robots) {
+      robots = document.createElement('meta')
+      robots.name = 'robots'
+      document.head.append(robots)
+    }
+    robots.content = metadata ? 'index,follow' : 'noindex,follow'
+
+    let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')
+    if (metadata) {
+      if (!canonical) {
+        canonical = document.createElement('link')
+        canonical.rel = 'canonical'
+        document.head.append(canonical)
+      }
+      canonical.href = `https://playtozdogtraining.com.au${route === '/' ? '/' : route}`
+    } else {
+      canonical?.remove()
+    }
+
+    if (window.gtag) {
+      window.gtag('event', 'page_view', {
+        page_title: document.title,
+        page_location: window.location.href,
+        page_path: `${pathname}${search}${hash}`,
+      })
+    }
+  }, [hash, metadata, pathname, route, search])
+
+  return null
+}
+
 function App() {
   return (
     <BrowserRouter>
+      <PageMetadata />
       <SiteHeader />
       <main id="main-content">
         <Routes>
