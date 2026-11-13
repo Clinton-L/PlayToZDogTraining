@@ -7,6 +7,7 @@ import travelServicesImage from '../assets/JetInCar.jpg'
 type ServiceContent = string | { item: string; description: string }
 
 export type Service = {
+  id: string
   display: boolean
   title: string
   subtitle: string
@@ -37,6 +38,7 @@ export type Service = {
 
 export const services = [
   {
+    id: 'begin_puppy_foundations',
     display: true,
     title: 'Begin - Puppy Foundations',
     subtitle:'A little guidance for the big adventure.',
@@ -77,6 +79,7 @@ export const services = [
     }
   },
   {
+    id: 'learn_initial_consultation',
     display: true,
     title: 'Learn - Initial Consultation',
     subtitle:'Every dog has a story. Let\'s start with yours',
@@ -105,6 +108,7 @@ export const services = [
     }
   },
   {
+    id: 'grow_life_manners',
     display: true,
     title: 'Grow - Life Manners',
     subtitle:'Making everyday life a little easier.',
@@ -137,6 +141,7 @@ export const services = [
     }
   },
   {
+    id: 'thrive_everyday_skills',
     display: true,
     title: 'Thrive - Every Day Skills',
     subtitle:'Building skills for real life.',
@@ -169,6 +174,7 @@ export const services = [
     }
   },
   {
+    id: 'event_assistance',
     display: false,
     title: 'Event Assistance',
     subtitle: 'Support for special occasions',
@@ -183,6 +189,7 @@ export const services = [
     }
   },
   {
+    id: 'travel_in_home_sessions',
     display: true,
     title: 'Travel & In-home Sessions',
     category: 'logistics',
@@ -198,10 +205,10 @@ export const services = [
       how: {
         title: 'Travel fees',
         list: [
-          { item: 'Within 10 km', description: 'Travel within 10 km of the trainer\'s location is included in the session cost.' },
+          { item: 'Within 10 km', description: 'Travel within 10 km of Werribee is included in the session cost.' },
           { item: '10–20 km', description: 'A travel fee of $15 per appointment applies for travel between 10 and 20 km.' },
           { item: '20–30 km', description: 'A travel fee of $25 per appointment applies for travel between 20 and 30 km.' },
-          { item: '30+ km', description: 'For travel beyond 30 km, a travel fee will be discussed before confirming your initial consultation.' },
+          { item: '30+ km', description: 'For travel beyond 30 km, travel arrangements and any fees will be agreed before confirming your initial consultation.' },
           '<i>Not sure if you\'re in my service area? Get in touch and we\'ll work it out!</i>'
         ]
       }

@@ -11,19 +11,13 @@ import bannerImage from './assets/Play to Z Dog Training banner v2(2).png'
 import pawFavicon from './assets/Play to Z Dog Training favicon.jpg'
 import fullLogo from './assets/Play to Z Dog Training logo_full colour_RGB.png'
 import pageMetadata from './seo-pages.json'
+import { trackAnalyticsEvent } from './analytics'
 import './App.css'
-
-declare global {
-  interface Window {
-    gtag: (...args: unknown[]) => void
-  }
-}
 
 const navigation = [
   { label: 'Home', to: '/' },
   { label: 'About', to: '/about' },
   { label: 'Services', to: '/services' },
-  ...(import.meta.env.DEV ? [{ label: 'Blog', to: '/blog' }] : []),
   { label: 'FAQ', to: '/faq' },
   { label: 'Contact', to: '/contact' },
 ]
@@ -42,7 +36,7 @@ function DevelopmentBlogRoute() {
   )
 }
 
-function SiteHeader() {
+function SiteHeader({ items }: { items: typeof navigation }) {
   const { pathname } = useLocation()
   const isHome = pathname === '/'
   const [menuOpen, setMenuOpen] = useState(false)
@@ -61,7 +55,7 @@ function SiteHeader() {
           </Link>
         )}
         <nav id="main-navigation" className={`main-nav${menuOpen ? ' is-open' : ''}`} aria-label="Main navigation">
-          {navigation.map((item) => (
+          {items.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -94,7 +88,7 @@ function SiteHeader() {
   )
 }
 
-function SiteFooter() {
+function SiteFooter({ items }: { items: typeof navigation }) {
   return (
     <footer className="site-footer">
       <Link className="footer-brand" to="/" aria-label="PlayToZ Dog Training home">
@@ -102,7 +96,7 @@ function SiteFooter() {
       </Link>
       <p>Good days are built together.</p>
       <nav aria-label="Footer navigation">
-        {navigation
+        {items
           .filter((item) => item.to !== '/faq')
           .map((item) => <Link key={item.to} to={item.to}>{item.label}</Link>)}
       </nav>
@@ -119,53 +113,79 @@ function PageMetadata() {
   const metadata = pageMetadata[route as keyof typeof pageMetadata]
 
   useEffect(() => {
-    document.title = metadata?.title ?? 'Page not found | Play to Z Dog Training'
+    const pageTitle = metadata?.title ?? 'Page not found | Play to Z Dog Training'
+    const pageDescription = metadata?.description ?? 'The page you requested could not be found.'
+    const canonicalUrl = metadata
+      ? `https://playtozdogtraining.com.au${route === '/' ? '/' : route}`
+      : undefined
+    const socialImage = 'https://playtozdogtraining.com.au/social-preview.jpg'
+    const socialImageAlt = 'Play to Z Dog Training in Werribee, Victoria, with the trainer and her two dogs.'
 
-    let description = document.querySelector<HTMLMetaElement>('meta[name="description"]')
-    if (!description) {
-      description = document.createElement('meta')
-      description.name = 'description'
-      document.head.append(description)
-    }
-    description.content = metadata?.description ?? 'The page you requested could not be found.'
+    document.title = pageTitle
 
-    let robots = document.querySelector<HTMLMetaElement>('meta[name="robots"]')
-    if (!robots) {
-      robots = document.createElement('meta')
-      robots.name = 'robots'
-      document.head.append(robots)
+    const setMetaContent = (selector: string, attribute: 'name' | 'property', content?: string) => {
+      let tag = document.querySelector<HTMLMetaElement>(selector)
+      if (!content) {
+        tag?.remove()
+        return
+      }
+      if (!tag) {
+        tag = document.createElement('meta')
+        tag.setAttribute(attribute, selector.match(/["']([^"']+)["']/)?.[1] ?? '')
+        document.head.append(tag)
+      }
+      tag.content = content
     }
-    robots.content = metadata ? 'index,follow' : 'noindex,follow'
+
+    setMetaContent('meta[name="description"]', 'name', pageDescription)
+    setMetaContent('meta[name="robots"]', 'name', metadata ? 'index,follow' : 'noindex,follow')
+    setMetaContent('meta[property="og:type"]', 'property', 'website')
+    setMetaContent('meta[property="og:site_name"]', 'property', 'Play to Z Dog Training')
+    setMetaContent('meta[property="og:locale"]', 'property', 'en_AU')
+    setMetaContent('meta[property="og:title"]', 'property', pageTitle)
+    setMetaContent('meta[property="og:description"]', 'property', pageDescription)
+    setMetaContent('meta[property="og:url"]', 'property', canonicalUrl)
+    setMetaContent('meta[property="og:image"]', 'property', socialImage)
+    setMetaContent('meta[property="og:image:width"]', 'property', '1200')
+    setMetaContent('meta[property="og:image:height"]', 'property', '630')
+    setMetaContent('meta[property="og:image:alt"]', 'property', socialImageAlt)
+    setMetaContent('meta[name="twitter:card"]', 'name', 'summary_large_image')
+    setMetaContent('meta[name="twitter:title"]', 'name', pageTitle)
+    setMetaContent('meta[name="twitter:description"]', 'name', pageDescription)
+    setMetaContent('meta[name="twitter:image"]', 'name', socialImage)
+    setMetaContent('meta[name="twitter:image:alt"]', 'name', socialImageAlt)
 
     let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')
-    if (metadata) {
+    if (canonicalUrl) {
       if (!canonical) {
         canonical = document.createElement('link')
         canonical.rel = 'canonical'
         document.head.append(canonical)
       }
-      canonical.href = `https://playtozdogtraining.com.au${route === '/' ? '/' : route}`
+      canonical.href = canonicalUrl
     } else {
       canonical?.remove()
     }
 
-    if (window.gtag) {
-      window.gtag('event', 'page_view', {
-        page_title: document.title,
-        page_location: window.location.href,
-        page_path: `${pathname}${search}${hash}`,
-      })
-    }
+    trackAnalyticsEvent('page_view', {
+      page_title: document.title,
+      page_location: window.location.href,
+      page_path: `${pathname}${search}${hash}`,
+    })
   }, [hash, metadata, pathname, route, search])
 
   return null
 }
 
-function App() {
+export function AppLayout({ includeDevelopmentBlog = import.meta.env.DEV }: { includeDevelopmentBlog?: boolean }) {
+  const items = includeDevelopmentBlog
+    ? [...navigation.slice(0, 3), { label: 'Blog', to: '/blog' }, ...navigation.slice(3)]
+    : navigation
+
   return (
-    <BrowserRouter>
+    <>
       <PageMetadata />
-      <SiteHeader />
+      <SiteHeader items={items} />
       <main id="main-content">
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -174,7 +194,7 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/cancellation-policy" element={<CancellationPolicyPage />} />
-          {import.meta.env.DEV && (
+          {includeDevelopmentBlog && (
             <Route
               path="/blog"
               element={<DevelopmentBlogRoute />}
@@ -183,7 +203,15 @@ function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
-      <SiteFooter />
+      <SiteFooter items={items} />
+    </>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppLayout />
     </BrowserRouter>
   )
 }

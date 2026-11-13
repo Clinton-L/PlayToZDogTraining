@@ -1,5 +1,7 @@
+import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { services, type Service } from './services'
+import { trackAnalyticsEvent } from '../analytics'
 
 function RichText({ content }: { content: string }) {
   return <span dangerouslySetInnerHTML={{ __html: content }} />
@@ -59,7 +61,16 @@ function ServiceDetails({ service }: { service: Service }) {
   )
 }
 
-function ServiceCard({ service, logistics = false }: { service: Service; logistics?: boolean }) {
+function ServiceCard({
+  service,
+  position,
+  logistics = false,
+}: {
+  service: Service
+  position: number
+  logistics?: boolean
+}) {
+  const cardRef = useRef<HTMLElement>(null)
   const { description = [] } = service.details
   const hasMoreDetails = Boolean(
     service.details.what?.title ||
@@ -73,8 +84,27 @@ function ServiceCard({ service, logistics = false }: { service: Service; logisti
     service.closingNote?.content,
   )
 
+  useEffect(() => {
+    const card = cardRef.current
+    if (!card || !('IntersectionObserver' in window)) return
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+        trackAnalyticsEvent('service_card_view', {
+          service_id: service.id,
+          service_name: service.title,
+          card_position: position,
+        })
+        observer.disconnect()
+      }
+    }, { threshold: 0.5 })
+
+    observer.observe(card)
+    return () => observer.disconnect()
+  }, [position, service.id, service.title])
+
   return (
-    <article className={`service-card${logistics ? ' service-card-logistics' : ''}`}>
+    <article ref={cardRef} className={`service-card${logistics ? ' service-card-logistics' : ''}`}>
       <div className="service-card-heading">
         <img
           className="service-image"
@@ -111,7 +141,16 @@ function ServiceCard({ service, logistics = false }: { service: Service; logisti
           </details>
         )}
 
-        <Link className="text-link" to="/contact" aria-label={`Ask about ${service.title}`}>
+        <Link
+          className="text-link"
+          to="/contact"
+          aria-label={`Ask about ${service.title}`}
+          onClick={() => trackAnalyticsEvent('service_enquiry_click', {
+            service_id: service.id,
+            service_name: service.title,
+            cta_location: 'service_card',
+          })}
+        >
           Ask about this service <span aria-hidden="true">↗</span>
         </Link>
       </div>
@@ -134,7 +173,7 @@ function ServicesPage() {
           I’ll help you understand what makes your dog tick and give you the tools to keep building on what we learn together.
           Because training doesn’t stop when our session ends — it’s about the relationship you build, the things you practise together and finding more joy in everyday life.
           <br />
-          All training is private, in-home and tailored to you, your dog and your family. 🐾
+          Based in Werribee, I offer private, in-home training tailored to your family and dog across surrounding areas. Travel fees depend on distance from Werribee. 🐾
         </p>
         <br />
         <p>
@@ -150,7 +189,9 @@ function ServicesPage() {
       <section className="service-section" aria-labelledby="programs-title">
         <h2 id="programs-title">Find the right support</h2>
         <div className="services-list">
-          {programServices.map((service) => <ServiceCard key={service.title} service={service} />)}
+          {programServices.map((service, index) => (
+            <ServiceCard key={service.id} service={service} position={index + 1} />
+          ))}
         </div>
       </section>
 
@@ -158,7 +199,7 @@ function ServicesPage() {
         <section className="service-section logistics-section" aria-labelledby="travel-title">
           <h2 id="travel-title">In-home sessions &amp; travel</h2>
           <div className="services-list">
-            <ServiceCard service={logisticsService} logistics />
+            <ServiceCard service={logisticsService} position={programServices.length + 1} logistics />
           </div>
         </section>
       )}

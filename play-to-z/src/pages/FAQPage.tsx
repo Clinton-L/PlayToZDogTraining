@@ -55,13 +55,13 @@ const questions = [
   {
     question: 'Do you charge travel fees?',
     paragraphs: [
-      'All sessions are in-home, with travel included in the session price for locations within 10 km of my base. For locations further afield, a travel fee applies per appointment.',
+      'All sessions are in-home. Travel from Werribee is included in the session price for locations within 10 km. For locations further afield, a travel fee applies per appointment.',
     ],
     travelFees: [
       ['Within 10 km', 'No travel fee'],
       ['10–20 km', '$15 per appointment'],
       ['20–30 km', '$25 per appointment'],
-      ['Beyond 30 km', 'Quoted individually before booking'],
+      ['Beyond 30 km', 'Travel arrangements and fees are agreed before booking'],
     ],
     closing: "Not sure if you're in my service area? Get in touch and I'll be happy to work it out with you!",
   },

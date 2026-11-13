@@ -1,3 +1,5 @@
+import { trackAnalyticsEvent } from '../analytics'
+
 function ContactPage() {
   return (
     <section className="inner-page content-width contact-page" aria-labelledby="contact-title">
@@ -5,8 +7,8 @@ function ContactPage() {
         <p className="eyebrow"><span className="eyebrow-dot" /> CONTACT</p>
         <h1 id="contact-title">Good things start<br />with <em>a hello.</em></h1>
         <p className="page-lede">
-          Have a question or want to talk about life with your dog? Reach out
-          and let’s take the first step.
+          Based in Werribee, Play to Z offers in-home dog training to local families and surrounding areas.
+          Get in touch to ask a question or check whether your location is covered.
         </p>
       </div>
       <div className="contact-layout">
@@ -21,11 +23,18 @@ function ContactPage() {
         <div className="contact-details">
           <div className="contact-row">
             <span className="contact-label">PHONE</span>
-            <a href="tel:+61401363375">0401 363 375</a>
+            <a href="tel:+61401363375" onClick={() => trackAnalyticsEvent('contact_method_click', { method: 'phone' })}>
+              0401 363 375
+            </a>
           </div>
           <div className="contact-row">
             <span className="contact-label">EMAIL</span>
-            <a href="mailto:kelsey@playtozdogtraining.com.au">kelsey@playtozdogtraining.com.au</a>
+            <a
+              href="mailto:kelsey@playtozdogtraining.com.au"
+              onClick={() => trackAnalyticsEvent('contact_method_click', { method: 'email' })}
+            >
+              kelsey@playtozdogtraining.com.au
+            </a>
           </div>
           <div className="contact-row">
             <span className="contact-label">FOLLOW ALONG</span>

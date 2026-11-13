@@ -5,7 +5,7 @@ function HomePage() {
     <>
       <section className="banner-intro content-width" aria-label="Welcome">
         <strong>Good days start together.</strong>
-        <p>Supportive training for the small moments that make up life with your dog.</p>
+        <p>Supportive, in-home dog training in Werribee and surrounding areas.</p>
       </section>
 
       <section className="intro-section content-width" aria-labelledby="intro-title">

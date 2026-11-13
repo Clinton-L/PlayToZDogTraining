@@ -1,5 +1,5 @@
-import { cleanup, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 import { services } from './pages/services'
 import indexHtml from '../index.html?raw'
@@ -16,6 +16,8 @@ const routes = [
 
 afterEach(() => {
   cleanup()
+  delete window.gtag
+  vi.unstubAllGlobals()
   window.history.replaceState(null, '', '/')
 })
 
@@ -33,6 +35,26 @@ it('embeds the Google tag in the document head after the meta tags', () => {
   expect(head).toContain("gtag('js', new Date());")
   expect(head).toContain("gtag('config', 'G-BGL5BKJ789', { send_page_view: false });")
   expect(head).not.toContain('gtm.js')
+  expect(head).toContain('property="og:image" content="https://playtozdogtraining.com.au/social-preview.jpg"')
+  expect(head).toContain('name="twitter:card" content="summary_large_image"')
+  expect(head).toContain('with the trainer and her two dogs')
+})
+
+it('includes truthful ProfessionalService structured data without a street address', () => {
+  const jsonLd = indexHtml.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1]
+  expect(jsonLd).toBeTruthy()
+
+  const schema = JSON.parse(jsonLd!)
+  expect(schema['@context']).toBe('https://schema.org')
+  expect(schema['@type']).toBe('ProfessionalService')
+  expect(schema.name).toBe('Play to Z Dog Training')
+  expect(schema.telephone).toBe('+61401363375')
+  expect(schema.email).toBe('kelsey@playtozdogtraining.com.au')
+  expect(schema.areaServed.name).toBe('Werribee, Victoria, Australia')
+  expect(schema.sameAs).toHaveLength(2)
+  expect(schema.hasOfferCatalog.itemListElement).toHaveLength(4)
+  expect(schema.address).toBeUndefined()
+  expect(schema.openingHours).toBeUndefined()
 })
 
 describe.each(routes)('$path route', ({ path, heading }) => {
@@ -49,12 +71,24 @@ it('updates the page title, description, canonical URL, and robots directive for
   render(<App />)
 
   expect(await screen.findByRole('heading', { name: /We're helping you raise a/ })).toBeTruthy()
-  expect(document.title).toBe('Dog Training Services | Play to Z Dog Training')
-  expect(document.querySelector<HTMLMetaElement>('meta[name="description"]')?.content).toContain('private, in-home')
+  expect(document.title).toBe('Mobile Dog Training | Play to Z')
+  expect(document.querySelector<HTMLMetaElement>('meta[name="description"]')?.content).toContain('Werribee')
   expect(document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href).toBe(
     'https://playtozdogtraining.com.au/services',
   )
   expect(document.querySelector<HTMLMetaElement>('meta[name="robots"]')?.content).toBe('index,follow')
+  expect(document.querySelector<HTMLMetaElement>('meta[property="og:title"]')?.content).toBe(document.title)
+  expect(document.querySelector<HTMLMetaElement>('meta[property="og:description"]')?.content).toContain('Werribee')
+  expect(document.querySelector<HTMLMetaElement>('meta[property="og:url"]')?.content).toBe(
+    'https://playtozdogtraining.com.au/services',
+  )
+  expect(document.querySelector<HTMLMetaElement>('meta[name="twitter:card"]')?.content).toBe('summary_large_image')
+  expect(document.querySelector<HTMLMetaElement>('meta[name="twitter:image"]')?.content).toBe(
+    'https://playtozdogtraining.com.au/social-preview.jpg',
+  )
+  expect(document.querySelector<HTMLMetaElement>('meta[property="og:image:alt"]')?.content).toContain(
+    'her two dogs',
+  )
 })
 
 it('marks unknown routes as not indexable', async () => {
@@ -104,6 +138,108 @@ it('hides services whose display flag is false', () => {
   }
 })
 
+it('tracks service enquiry clicks with a stable service identifier', () => {
+  const gtag = vi.fn()
+  window.gtag = gtag
+  window.history.pushState(null, '', '/services')
+  render(<App />)
+
+  fireEvent.click(screen.getByRole('link', { name: 'Ask about Begin - Puppy Foundations' }))
+
+  expect(gtag).toHaveBeenCalledWith('event', 'service_enquiry_click', {
+    service_id: 'begin_puppy_foundations',
+    service_name: 'Begin - Puppy Foundations',
+    cta_location: 'service_card',
+  })
+})
+
+it('tracks visible service cards once after at least half the card is visible', () => {
+  const gtag = vi.fn()
+  window.gtag = gtag
+  const observers: MockIntersectionObserver[] = []
+  class MockIntersectionObserver {
+    private readonly callback: IntersectionObserverCallback
+    root: Element | Document | null = null
+    rootMargin = '0px'
+    scrollMargin = '0px'
+    thresholds = [0.5]
+    disconnected = false
+
+    constructor(callback: IntersectionObserverCallback) {
+      this.callback = callback
+      observers.push(this)
+    }
+
+    observe(target: Element) {
+      this.trigger(target, 0)
+    }
+
+    unobserve() {}
+
+    disconnect() {
+      this.disconnected = true
+    }
+
+    takeRecords() {
+      return []
+    }
+
+    trigger(target: Element, intersectionRatio: number) {
+      if (this.disconnected) return
+      const rect = target.getBoundingClientRect()
+      this.callback([{
+        target,
+        isIntersecting: intersectionRatio > 0,
+        intersectionRatio,
+        boundingClientRect: rect,
+        intersectionRect: rect,
+        rootBounds: null,
+        time: 0,
+      }], this)
+    }
+  }
+  vi.stubGlobal('IntersectionObserver', MockIntersectionObserver)
+  window.history.pushState(null, '', '/services')
+  render(<App />)
+
+  expect(observers).toHaveLength(5)
+  const beginCard = document.querySelector('.service-card')
+  expect(beginCard).not.toBeNull()
+  observers[0].trigger(beginCard!, 0.49)
+  expect(gtag.mock.calls.filter(([command, eventName]) =>
+    command === 'event' && eventName === 'service_card_view',
+  )).toHaveLength(0)
+  observers[0].trigger(beginCard!, 0.5)
+  observers[0].trigger(beginCard!, 0.75)
+  observers.slice(1).forEach((observer, index) => {
+    observer.trigger(document.querySelectorAll('.service-card')[index + 1], 0.5)
+  })
+  expect(gtag).toHaveBeenCalledWith('event', 'service_card_view', {
+    service_id: 'begin_puppy_foundations',
+    service_name: 'Begin - Puppy Foundations',
+    card_position: 1,
+  })
+  expect(gtag.mock.calls.filter(([command, eventName]) =>
+    command === 'event' && eventName === 'service_card_view',
+  )).toHaveLength(5)
+})
+
+it.each([
+  ['phone', 'tel:+61401363375'],
+  ['email', 'mailto:kelsey@playtozdogtraining.com.au'],
+] as const)('tracks %s contact link clicks', (method, href) => {
+  const gtag = vi.fn()
+  window.gtag = gtag
+  window.history.pushState(null, '', '/contact')
+  render(<App />)
+
+  const link = document.querySelector<HTMLAnchorElement>(`a[href="${href}"]`)!
+  link.addEventListener('click', (event) => event.preventDefault(), { once: true })
+  fireEvent.click(link)
+
+  expect(gtag).toHaveBeenCalledWith('event', 'contact_method_click', { method })
+})
+
 it('uses the logo as the footer home link without changing footer navigation', () => {
   const { container } = render(<App />)
   const footerBrand = container.querySelector('.site-footer .footer-brand')
@@ -127,7 +263,7 @@ it('shows all FAQ answers as accessible, initially collapsed disclosures', () =>
   expect(items).toHaveLength(9)
   expect(items.every((item) => !item.hasAttribute('open'))).toBe(true)
   expect(screen.getByText('Within 10 km')).toBeTruthy()
-  expect(screen.getByText('Quoted individually before booking')).toBeTruthy()
+  expect(screen.getByText('Travel arrangements and fees are agreed before booking')).toBeTruthy()
   expect(container.querySelector('.faq-item:last-child .faq-answer a')?.getAttribute('href')).toBe('/cancellation-policy')
 })
 
