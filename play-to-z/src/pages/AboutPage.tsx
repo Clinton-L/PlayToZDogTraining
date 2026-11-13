@@ -99,26 +99,24 @@ function AboutPage() {
           <p>
             My background is in zoology and conservation, where understanding animal behaviour and the way animals interact with their environment is a big part of what I do.
           </p>
-          <p>
-            <b>Qualifications</b>
-            <ul>
-              <li>Bachelor of Science (Zoology)</li>
-              <li>Master of Environment and Conservation (science communications)</li>
-              <li>Certificate IV in Animal Behaviour and Training (currently enrolled)</li>
-            </ul>
-            <b>Professional Experience</b>
-            <ul>
-              <li>3+ years working as a conservation scent detection dog handler</li>
-              <li>Training operational scent detection dogs</li>
-              <li>Training and supporting operational scent detection dog handlers</li>
-            </ul>
-            <b>Dog training education</b>
-            <ul>
-              <li>Austin's Education Dog Training and Behaviour Course — theory and practical components undertaken</li>
-              <li>Conservation Detection Dog Handler Course</li>
-              <li>Additional short courses in dog training and behaviour</li>
-            </ul>
-          </p>
+          <p><b>Qualifications</b></p>
+          <ul>
+            <li>Bachelor of Science (Zoology)</li>
+            <li>Master of Environment and Conservation (science communications)</li>
+            <li>Certificate IV in Animal Behaviour and Training (currently enrolled)</li>
+          </ul>
+          <p><b>Professional Experience</b></p>
+          <ul>
+            <li>3+ years working as a conservation scent detection dog handler</li>
+            <li>Training operational scent detection dogs</li>
+            <li>Training and supporting operational scent detection dog handlers</li>
+          </ul>
+          <p><b>Dog training education</b></p>
+          <ul>
+            <li>Austin's Education Dog Training and Behaviour Course — theory and practical components undertaken</li>
+            <li>Conservation Detection Dog Handler Course</li>
+            <li>Additional short courses in dog training and behaviour</li>
+          </ul>
         </div>
       </div>
       <div className="about-story about-story-reversed about-story-koala">
